@@ -55,7 +55,9 @@ class Solution {
         }
         if(l1.val<l2.val)
         {
+           //取消l1指针原指向，指向一个新的两个链表，具体指向等返回值
             l1.next=mergeTwoLists(l1.next,l2);
+            //此返回值在递归返回时起指向作用
             return l1;
         }else
         {
