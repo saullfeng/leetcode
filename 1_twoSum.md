@@ -35,6 +35,7 @@ class Solution {
         for(int i=0;i<n;i++){
             int value =nums[i];
             int r =target-value;
+           //此时map的集合中的key是否有等于 r
            if(map.containsKey(r)){
                res[1]=i;
                res[0]=map.get(r);
