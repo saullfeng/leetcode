@@ -1,0 +1,75 @@
+#### [16. 最接近的三数之和](https://leetcode-cn.com/problems/3sum-closest/)
+
+难度中等845收藏分享切换为英文接收动态反馈
+
+给定一个包括 *n* 个整数的数组 `nums` 和 一个目标值 `target`。找出 `nums` 中的三个整数，使得它们的和与 `target` 最接近。返回这三个数的和。假定每组输入只存在唯一答案。
+
+ 
+
+**示例：**
+
+```
+输入：nums = [-1,2,1,-4], target = 1
+输出：2
+解释：与 target 最接近的和是 2 (-1 + 2 + 1 = 2) 。
+```
+
+ 
+
+**提示：**
+
+- `3 <= nums.length <= 10^3`
+- `-10^3 <= nums[i] <= 10^3`
+- `-10^4 <= target <= 10^4`
+
+### 双指针
+
+对数组进行排序，使用三个指针 i、j 和 k 分别代表要找的三个数。
+
+通过枚举 i 确定第一个数，另外两个指针 j，k 分别从左边 i + 1 和右边 n - 1 往中间移动，找到满足 nums[i] + nums[j] + nums[k] 最接近 target 的唯一解。
+
+j 和 k 指针的移动逻辑，分情况讨论 sum = nums[i] + nums[j] + nums[k] ：
+
+sum > target：k 左移，使 sum 变小
+sum < target：j 右移，使 sum 变大
+sum = target：找到最符合要求的答案，直接返回
+为了更快找到答案，对于相同的 i，可以直接跳过下标。
+
+abs返回其绝对值
+
+
+
+```java
+class Solution {
+    public int threeSumClosest(int[] nums, int target) {
+        Arrays.sort(nums);
+        //初始化
+        int ans =nums[0]+nums[1]+nums[2];
+        int n=nums.length;
+        for(int i=0;i<n;i++){
+            //去重
+            if(i>0&&nums[i]==nums[i-1]) continue;
+            int j=i+1,k=n-1;
+            while(j<k){
+                int sum=nums[i]+nums[j]+nums[k];
+                //判断现在值sum 与存储值ans的大小
+                if(Math.abs(sum-target)<Math.abs(ans-target)) ans =sum;
+                if(sum==target)
+                    return target;
+                else if(sum>target)
+                    k--;
+                else if(sum<target)
+                    j++; 
+            }
+        }
+        return ans;
+    }
+}
+```
+
+时间复杂度：排序的复杂度为 O(logN)，对于每个 i 而言，最坏的情况 j 和 k 都要扫描一遍数组的剩余部分，复杂度为 O(n^2)。整体复杂度为 O(n^2)
+
+
+
+空间复杂度：O(logN)。排序需要使用 O(logN) 的空间。然而我们修改了输入的数组 nums，在实际情况下不一定允许，因此也可以看成使用了一个额外的数组存储了nums 的副本并进行排序，此时空间复杂度为 O(N)。
+
