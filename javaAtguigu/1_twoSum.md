@@ -20,6 +20,8 @@
 
 哈希表法
 
+![image-20210816105115987](C:\Users\solfeng\AppData\Roaming\Typora\typora-user-images\image-20210816105115987.png)
+
 ```java
 class Solution {
     public int[] twoSum(int[] nums, int target) {
@@ -70,3 +72,4 @@ class Solution {
 
 ```
 
+![image-20210816105012237](C:\Users\solfeng\AppData\Roaming\Typora\typora-user-images\image-20210816105012237.png)
