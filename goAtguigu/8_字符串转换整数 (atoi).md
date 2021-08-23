@@ -111,44 +111,57 @@
 
 一个 32 位有符号整数 即int类型为临界值 可能溢出
 
-```java
-class Solution {
-    public static int myAtoi(String s) {
-        int n = s.length();
-        char[] chars = s.toCharArray();
-        int idx = 0;
-
-        // 去除前导空格，如果去完前导空格后无字符了，返回 0
-        // chars[idx] == ' ' 读入下一个字符，直到到达下一个非数字字符或到达输入的结尾。字符串的其余部分将被忽略。
-        while (idx < n && chars[idx] == ' ') idx++;
-        if (idx == n) return 0;
-
-        // 检查第一个字符：可以为正负号/数字
-        boolean isNeg = false;
-        if (chars[idx] == '-') {
-            idx++;
-            isNeg = true;
-        } else if (chars[idx] == '+') {
-            idx++;
-
-        } else if (!Character.isDigit(chars[idx])) {//isDigit() 方法用于判断指定字符是否为数字 如果字符为数字，则返回 true；否则返回 false
-            return 0;
-        }
-
-        int ans = 0;
-        //读入下一个字符，直到到达下一个非数字字符或到达输入的结尾。字符串的其余部分将被忽略
-        while (idx < n && Character.isDigit(chars[idx])) {
-            int cur = chars[idx++] - '0';
-            // 和上一题的“【刷穿 LeetCode】7. 整数反转”一样，防止 ans = ans * 10 + cur 溢出
-            // 等价变形为 ans > (Integer.MAX_VALUE - cur) / 10 进行预判断
-            if (ans > (Integer.MAX_VALUE - cur) / 10) {
-                return isNeg ? Integer.MIN_VALUE : Integer.MAX_VALUE;
-            }
-            ans = ans * 10 + cur;
-        }
-        return isNeg ? -ans : ans;
-    }
-
+```go
+func myAtoi(s string) int {
+	var (
+		negative  bool // 负数
+		i         int32
+		signed    bool // 是否出现过'-'，'+'
+		startZero bool // 是否开始是0,再出现'-'，'+'，return 0
+	)
+	for k, v := range s { // 去除前空格
+		if v != ' ' {
+			s = s[k:]
+			break
+		}
+	}
+	for _, v := range s {
+		if v == '0' && !signed && i == 0 { // 0000-898
+			startZero = true
+			continue
+		}
+		if startZero && (v == '+' || v == '-') {
+			break
+		}
+		if v == '+' && !signed { // +
+			signed = true
+			continue
+		}
+		if v == '-' && !signed && i == 0 { // -
+			negative = true
+			signed = true
+			continue
+		}
+		if v < '0' || v > '9' {
+			break
+		}
+		if negative { //负数
+			if -i < (math.MinInt32+(v-'0'))/10 {
+				i = math.MinInt32
+				break
+			}
+		} else {
+			if i > (math.MaxInt32-(v-'0'))/10 {
+				i = math.MaxInt32
+				break
+			}
+		}
+		i = v - '0' + i*10
+	}
+	if negative {
+		i = -i
+	}
+	return int(i)
 }
 ```
 
@@ -162,51 +175,73 @@ class Solution {
 
 ![image-20210823113845636](C:\Users\solfeng\AppData\Roaming\Typora\typora-user-images\image-20210823113845636.png)
 
-```java
-class Solution {
-    public int myAtoi(String str) {
-        Automaton automaton = new Automaton();
-        int length = str.length();
-        for (int i = 0; i < length; ++i) {
-            automaton.get(str.charAt(i));
-        }
-        return (int) (automaton.sign * automaton.ans);
-    }
+```go
+func myAtoi(str string) int {
+	automaton := initAutomaton()
+	length := len(str)
+	for i := 0; i < length; i++ {
+		automaton.get(str[i])
+	}
+	return automaton.Sign * int(automaton.Ans)
 }
 
-class Automaton {
-    public int sign = 1;
-    public long ans = 0;
-    private String state = "start";
-    private Map<String, String[]> table = new HashMap<String, String[]>() {{
-        put("start", new String[]{"start", "signed", "in_number", "end"});
-        put("signed", new String[]{"end", "end", "in_number", "end"});
-        put("in_number", new String[]{"end", "end", "in_number", "end"});
-        put("end", new String[]{"end", "end", "end", "end"});
-    }};
+type Automaton struct {
+	Sign  int // 1;
+	Ans   int64
+	State string
+	table map[string][]string //= new HashMap<String, String[]>() {{
+}
 
-    public void get(char c) {
-        state = table.get(state)[get_col(c)];
-        if ("in_number".equals(state)) {
-            ans = ans * 10 + c - '0';
-            ans = sign == 1 ? Math.min(ans, (long) Integer.MAX_VALUE) : Math.min(ans, -(long) Integer.MIN_VALUE);
-        } else if ("signed".equals(state)) {
-            sign = c == '+' ? 1 : -1;
-        }
-    }
+func initAutomaton() Automaton {
+	return Automaton{
+		Sign:  1,
+		Ans:   0,
+		State: "start",
+		table: map[string][]string{
+			"start":     []string{"start", "signed", "in_number", "end"},
+			"signed":    []string{"end", "end", "in_number", "end"},
+			"in_number": []string{"end", "end", "in_number", "end"},
+			"end":       []string{"end", "end", "end", "end"},
+		},
+	}
 
-    private int get_col(char c) {
-        if (c == ' ') {
-            return 0;
-        }
-        if (c == '+' || c == '-') {
-            return 1;
-        }
-        if (Character.isDigit(c)) {
-            return 2;
-        }
-        return 3;
-    }
+}
+
+func (a *Automaton) get(c uint8) {
+	a.State = a.table[a.State][getCol(c)]
+	if "in_number" == a.State {
+		a.Ans = a.Ans*10 + int64(c-'0')
+		if a.Sign == 1 {
+			a.Ans = min(a.Ans, math.MaxInt32)
+		} else {
+			a.Ans = min(a.Ans, -math.MinInt32)
+		}
+	} else if "signed" == a.State {
+		if c == '+' {
+			a.Sign = 1
+		} else {
+			a.Sign = -1
+		}
+	}
+}
+func min(a, b int64) int64 {
+	if a >= b {
+		return b
+	}
+	return a
+}
+
+func getCol(c uint8) int {
+	if c == ' ' {
+		return 0
+	}
+	if c == '+' || c == '-' {
+		return 1
+	}
+	if c >= '0' && c <= '9' {
+		return 2
+	}
+	return 3
 }
 ```
 
