@@ -65,34 +65,21 @@ AB -> 28
 
 ![image-20210825155408069](C:\Users\solfeng\AppData\Roaming\Typora\typora-user-images\image-20210825155408069.png)
 
-```java
-class Solution {
-    public String convertToTitle(int cn) {
-    StringBuilder res =new StringBuilder();
-        while(cn >0){
-            cn--;
-            //cn % 26剩余数为字母
-            res.append((char)(cn % 26 +'A'));
-            cn /=26;
-        }
-        //反转
-        res.reverse();
-        return res.toString();
-    }
-}
-```
+
 
 ```java
-class Solution {
-    public String convertToTitle(int columnNumber) {
-        StringBuffer sb = new StringBuffer();
-        while (columnNumber != 0) {
-            columnNumber--;
-            sb.append((char)(columnNumber % 26 + 'A'));
-            columnNumber /= 26;
-        }
-        return sb.reverse().toString();
+func convertToTitle(columnNumber int) string {
+    ans :=[]byte{}
+    for columnNumber > 0{
+        columnNumber--
+            ans =append(ans,'A'+byte(columnNumber%26))
+            columnNumber /=26
     }
+    //反转
+    for i,n :=0,len(ans);i < n/2;i++{
+        ans[i],ans[n-1-i] =ans[n-1-i],ans[i]
+    }
+    return string(ans)
 }
 ```
 
