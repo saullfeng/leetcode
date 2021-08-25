@@ -49,7 +49,7 @@ AB -> 28
 
  
 
-### %运算
+### 数学%运算
 
 这是一道从 1 开始的的 26 进制转换题。
 
@@ -67,7 +67,7 @@ AB -> 28
 
 
 
-```java
+```go
 func convertToTitle(columnNumber int) string {
     ans :=[]byte{}
     for columnNumber > 0{
