@@ -79,7 +79,7 @@ ans = ans * 10 + 4ans=ans∗10+4 => D
 
 同理，本题只是将 10 进制换成 26进制
 
-
+![image-20210826102600210](C:\Users\solfeng\AppData\Roaming\Typora\typora-user-images\image-20210826102600210.png)
 
 ```java
 class Solution {

@@ -79,25 +79,23 @@ ans = ans * 10 + 4ans=ans∗10+4 => D
 
 同理，本题只是将 10 进制换成 26进制
 
+![image-20210826102600210](C:\Users\solfeng\AppData\Roaming\Typora\typora-user-images\image-20210826102600210.png)
 
-
-```java
-class Solution {
-    public int titleToNumber(String s) {
-        char[] cn = s.toCharArray();
-        int n =cn.length;
-        int ans =0;
-        //cn[i]-'A'+1 等于cn[i]字母本身
-        for(int i=0;i<n;i++){
-            ans=ans*26+(cn[i]-'A'+1);
-        }
-        return ans;
-        
+```go
+func titleToNumber(columnTitle string) (number int) {
+    for i , multiple :=len(columnTitle)-1,1;i >=0;i--{
+        //第k 个字母
+        k :=columnTitle[i]-'A'+1
+        //字母之和
+        number +=int(k) * multiple
+        //第k个字母的26的下标的次幂
+        multiple *=26
     }
+    return
 }
 ```
 
-![image-20210806103512048](C:\Users\solfeng\AppData\Roaming\Typora\typora-user-images\image-20210806103512048.png)
+
 
 时间复杂度：O(n)
 空间复杂度：因为 toCharArray 会创建与 s 等长的数组，因此使用 charAt 代替 toCharArray 的话为 O(1)，否则为 O(n)
