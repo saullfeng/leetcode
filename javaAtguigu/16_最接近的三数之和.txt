@@ -46,16 +46,20 @@ class Solution {
         //初始化
         int ans =nums[0]+nums[1]+nums[2];
         int n=nums.length;
+        // 枚举 a
         for(int i=0;i<n;i++){
-            //去重
+            //去重 保证和上一次枚举的元素不相等
             if(i>0&&nums[i]==nums[i-1]) continue;
+            // 使用双指针枚举 b 和 c
             int j=i+1,k=n-1;
             while(j<k){
                 int sum=nums[i]+nums[j]+nums[k];
-                //判断现在值sum 与存储值ans的大小
+                // 根据差值的绝对值来更新答案
                 if(Math.abs(sum-target)<Math.abs(ans-target)) ans =sum;
+                // 如果和为 target 直接返回答案
                 if(sum==target)
                     return target;
+                // 如果和大于 target，移动 c 对应的指针
                 else if(sum>target)
                     k--;
                 else if(sum<target)
